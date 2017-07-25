@@ -1,5 +1,6 @@
-Created by Vampiire on 7/24/17.
-Concept Inspiration: @agathalynn from the Chingu Voyage Cohort 
+**Created by Vampiire**
+
+**Concept Inspiration: @agathalynn from the Chingu Voyage Cohort**
  
   Val Stringer
  
@@ -14,10 +15,7 @@ Concept Inspiration: @agathalynn from the Chingu Voyage Cohort
  
   Val Stringer allows for interactive messages in Slack to act more similarly to an HTML form in terms of gathering data
   and updating a database. It works by exploiting the value property of the IM menu items. An object which can
-  continuously store the values obtained during an IM interaction can be passed into the value field by stringifying it
- 
-  A single object filled with multiple values obtained through multiple user interactions with
-  an interactive message is passed back just like an HTML form. By labeling each value obtained the same as that of the
+  continuously store the values obtained during an IM interaction can be updated and passed into the value field by stringifying it. By labeling each value obtained the same as that of the
   database schema fields this single object can be passed directly into a mongoose upsert / update database call.
  
   Code:
@@ -46,7 +44,7 @@ Concept Inspiration: @agathalynn from the Chingu Voyage Cohort
  
   *********************************************************************************************************************
  
-       function populateOptions:
+       function valOptions:
  
            purpose:
                accepts an array of IM menu text values to populate the menu automatically while still preserving
@@ -65,31 +63,45 @@ Concept Inspiration: @agathalynn from the Chingu Voyage Cohort
  
        function valAttacher:
 
-       Description / how to use the valAttacher function:
+            purpose:
+                automatically builds and returns a Slack interactive message attachment with built in valStringer and valOptions functionality
 
-        valueObject:
-        initial message: pass an empty object {}
-        subsequent responses: pass the value object from the Slack interactive message payload
-        accessed via: "payload.actions[0].selected_options[0].value"
+            parameters:
 
-        attachmentFields:
-        this is an object containing all attachment fields besides the options themselves
-        the following is a list of the minimum required fields:
-        {
-             text: instructional text describing the purpose of the dropdown menu,
-             callback_id: the id of the particular message, this is used server side to distinguish the received message,
-             actions: [{
+            valueObject:
 
-                 name: pass the same name as the field in the database schema that the value will be associated with,
-                 type: 'select' DO NOT CHANGE THIS,
-                 data_source: 'static' DO NOT CHANGE THIS,
-             }],
+                initial message: pass an empty object {}
+                subsequent responses: pass the value object from the Slack interactive message payload
+                    accessed via: "payload.actions[0].selected_options[0].value"
 
-             any additional slack-accepted fields you would like should be added [comma-separated] below
-         }
+            attachmentFields:
+
+                this is an object containing all attachment fields besides the options themselves
+                    options will be automatically generated from the optionsTextArray parameter
+                    using the valOptions function
+
+                the following is a list of the minimum required fields:
+                {
+                     text: instructional text describing the purpose of the dropdown menu,
+                     callback_id: the id of the particular message, this is used server side to distinguish the received message,
+                     actions: [{
+
+                         name: pass the same name as the field in the database schema that the value will be associated with,
+                         type: 'select' DO NOT CHANGE THIS,
+                         data_source: 'static' DO NOT CHANGE THIS,
+                     }],
+
+                     any additional slack-accepted fields you would like should be added [comma-separated] below
+                 }
+
+            optionsTextArray:
+
+                 this is an array that will provide text labels for each value
+                 it can be hardcoded into the Default variable or passed into the function
+
         ************************************************
 
-        for copy and pasting - the minimum:
+        for copy and pasting - the minimum required attachment fields object:
 
         {
             text: replaceMe,
@@ -103,9 +115,4 @@ Concept Inspiration: @agathalynn from the Chingu Voyage Cohort
 
         ************************************************
 
-        optionsTextArray:
-        this is an array that will provide text labels for each value
-        it can be hardcoded into the Default variable or passed into the function
- 
   *********************************************************************************************************************
-      
