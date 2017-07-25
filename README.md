@@ -28,15 +28,14 @@
                First message: accept a blank object and add the initial key and Slack user inputted value
                Subsequent: accept the now populated value object, extracted from the payload, and add all subsequent keys and values per call
 
-                    accessed via: "payload.actions[0].selected_options[0].value"
-                    copy / paste : let value = payload.actions[0].selected_options[0].value
-
- 
            parameters:
                valueObject -> the object which stores the initial and all subsequent values are stored
                               when the interactive messages chain has completed this object can be passed
                               directly into a mongodb / mongoose update method to update all the fields
                               received from the Slack interaction
+
+                              accessed via: "payload.actions[0].selected_options[0].value"
+                                  copy / paste : let value = payload.actions[0].selected_options[0].value
  
                key -> the name of the key that will hold the Slack user inputted value
                       this should be the same as the mongodb schema field that the value will be associated with
@@ -67,7 +66,7 @@
        function valAttacher:
 
             purpose:
-                automatically builds and returns a Slack interactive message attachment with built in valStringer and valOptions functionality
+                verifies, builds, and returns a Slack interactive message attachment with built in valStringer and valOptions functionality
 
             parameters:
 
@@ -99,8 +98,8 @@
 
                 optionsTextArray ->
 
-                     this is an array that will provide text labels for each value
-                     it can be hardcoded into the Default variable or passed into the function
+                     this is an array that will provide text and values labels for each menu item
+                     it can be hardcoded into the Default variable or passed into the function from an external source
 
         ************************************************
 
