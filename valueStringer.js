@@ -3,7 +3,7 @@ valStringer = (valueObject, key, value) => {
 
 // on the first call of valStringer the valueObject is an object. However on subsequent calls
 // it will be returned in the payload as a string and must be converted before being processed;
-    typeof valueObject === 'string' ? valueObject = JSON.parse(valObject) : false;
+    typeof valueObject === 'string' ? valueObject = JSON.parse(valueObject) : false;
 
     valueObject[key] = value;
 
