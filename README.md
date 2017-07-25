@@ -63,7 +63,49 @@ Concept Inspiration: @agathalynn from the Chingu Voyage Cohort
  
   *********************************************************************************************************************
  
-       function valAttacher: see detailed description below
+       function valAttacher:
+
+       Description / how to use the valAttacher function:
+
+        valueObject:
+        initial message: pass an empty object {}
+        subsequent responses: pass the value object from the Slack interactive message payload
+        accessed via: "payload.actions[0].selected_options[0].value"
+
+        attachmentFields:
+        this is an object containing all attachment fields besides the options themselves
+        the following is a list of the minimum required fields:
+        {
+             text: instructional text describing the purpose of the dropdown menu,
+             callback_id: the id of the particular message, this is used server side to distinguish the received message,
+             actions: [{
+
+                 name: pass the same name as the field in the database schema that the value will be associated with,
+                 type: 'select' DO NOT CHANGE THIS,
+                 data_source: 'static' DO NOT CHANGE THIS,
+             }],
+
+             any additional slack-accepted fields you would like should be added [comma-separated] below
+         }
+        ************************************************
+
+        for copy and pasting - the minimum:
+
+        {
+            text: replaceMe,
+            callback_id: replaceMe,
+            actions: [{
+                name: replaceMe,
+                type: 'select',
+                data_source: 'static'
+            }]
+        }
+
+        ************************************************
+
+        optionsTextArray:
+        this is an array that will provide text labels for each value
+        it can be hardcoded into the Default variable or passed into the function
  
   *********************************************************************************************************************
       
