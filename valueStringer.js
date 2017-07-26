@@ -25,7 +25,10 @@ valOptions = (dataArray, key, valueObject) => {
     return options;
 };
 
-// builds and returns an interactive message menu attachment object
+
+
+// builds and returns an attachment object
+
 valMenu = (headerText, callbackID, menuName, valueObject, menuItemsArray, customAttachment) => {
 
     let attachment = customAttachment ? errorScan(customAttachment) ? errorScan(customAttachment) :
@@ -38,11 +41,10 @@ valMenu = (headerText, callbackID, menuName, valueObject, menuItemsArray, custom
     return attachment;
 };
 
-// builds and returns an interactive message button attachment object
 valButton = (headerText, callbackID, buttonText, buttonName, buttonValue, valueObject, customAttachment) => {
 
     let attachment = customAttachment ? errorScan(customAttachment) ? errorScan(customAttachment) :
-        customAttachment:
+        customAttachment :
         buttonAttachment(headerText, callbackID, buttonText, buttonName, buttonValue, valueObject);
 
     if(customAttachment) customAttachment.actions[0].value = valStringer(valueObject, buttonName, buttonValue);
@@ -50,10 +52,9 @@ valButton = (headerText, callbackID, buttonText, buttonName, buttonValue, valueO
     return attachment;
 };
 
-valResponder = () => {
+valMessage = valObject => {
 
 };
-
 
 // ---------------------------- TOOLS --------------------------------- //
 
@@ -101,7 +102,7 @@ errorScan = (type, customAttachment) => {
     const actions = customAttachment.actions[0];
 
     const keysError = verifyKeys(customAttachment, expectedKeys);
-    const subKeysError = verifyKeys(customAttachment, expectedSubKeys);
+    const subKeysError = verifyKeys(actions, expectedSubKeys);
 
     if(keysError){
         return keysError;
@@ -129,6 +130,8 @@ errorScan = (type, customAttachment) => {
                 break;
         }
     }
+
+    return false;
 };
 
 

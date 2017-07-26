@@ -13,15 +13,18 @@
   On submit all of the values of the dropdown menus are passed to the server in a single object. This object can be
   easily passed directly into an insert or update method with a single database call.
  
-  Val Stringer allows for interactive messages in Slack to act more similarly to an HTML form in terms of gathering data
-  and updating a database. It works by exploiting the value property of the IM menu items. An object which can
-  continuously store the values obtained during an IM interaction can be updated and passed into the value field by stringifying it. By labeling each value obtained the same as that of the
-  database schema fields this single object can be passed directly into a mongoose upsert / update database call.
+  Val Stringer allows for interactive messages in Slack to provide HTML form benefits with respect to gathering data
+  and updating a database. It works by exploiting the value property of the IM menu or button attachment. Currently a
+  simple string is inserted as a value. Using valStringer an object is stringified and inserted as the value. This
+  makes Slack store the data throughout the user's interactions until it is ready to be processed in bulk.
+
+  During the first interaction the empty object is injected with the value of the first item via the valStringer function.
+  On each subsequent menu or button interaction the value object is updated to store all previous and current values.
+  When the final "submit" button is interacted by the user an object which stores the bulk data of all values is returned.
+  This bulk data object can be easily passed directly into an upsert / update database call.
  
-  Code:
- 
-  
- 
+  Code Breakdown:
+
        function valStringer
  
            purpose:
@@ -118,3 +121,6 @@
         ************************************************
 
   *********************************************************************************************************************
+
+Example Usage:
+
