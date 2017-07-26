@@ -25,8 +25,7 @@ valOptions = (dataArray, key, valueObject) => {
     return options;
 };
 
-// builds and returns an attachment object
-
+// builds and returns an interactive message menu attachment object
 valMenu = (headerText, callbackID, menuName, valueObject, menuItemsArray, customAttachment) => {
 
     let attachment = customAttachment ? errorScan(customAttachment) ? errorScan(customAttachment) :
@@ -39,6 +38,7 @@ valMenu = (headerText, callbackID, menuName, valueObject, menuItemsArray, custom
     return attachment;
 };
 
+// builds and returns an interactive message button attachment object
 valButton = (headerText, callbackID, buttonText, buttonName, buttonValue, valueObject, customAttachment) => {
 
     let attachment = customAttachment ? errorScan(customAttachment) ? errorScan(customAttachment) :
