@@ -26,8 +26,7 @@ valOptions = (dataArray, key, valueObject) => {
 };
 
 
-// builds and returns an attachment object
-
+// builds and returns a menu attachment object injected with valOptions
 valMenu = (headerText, callbackID, menuName, valueObject, menuItemsArray, customAttachment) => {
 
     let attachment = customAttachment ? errorScan('menu', customAttachment) ? errorScan('menu', customAttachment) :
@@ -42,6 +41,7 @@ valMenu = (headerText, callbackID, menuName, valueObject, menuItemsArray, custom
     return attachment;
 };
 
+// builds and returns a button attachment object injected with valStringer
 valButton = (headerText, callbackID, buttonText, buttonName, buttonValue, valueObject, customAttachment) => {
 
     let attachment = customAttachment ? errorScan('button', customAttachment) ? errorScan('button', customAttachment) :
@@ -52,10 +52,6 @@ valButton = (headerText, callbackID, buttonText, buttonName, buttonValue, valueO
         attachment.actions[0].value = valStringer(valueObject, buttonName, buttonValue);
 
     return attachment;
-};
-
-valMessage = valObject => {
-
 };
 
 // ---------------------------- TOOLS --------------------------------- //
