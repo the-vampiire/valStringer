@@ -1,20 +1,20 @@
 
+// ---------------------------- CORE EXPORTS --------------------------------- //
+
+// builds or extends and returns the value object
 valStringer = (valueObject, key, value) => {
 
-// on the first call of valStringer the valueObject is an object. However on subsequent calls
-// it will be returned in the payload as a string and must be converted before being processed;
-    typeof valueObject === 'string' ? valueObject = JSON.parse(valueObject) : false;
+    if(typeof valueObject === 'string') valueObject = JSON.parse(valueObject);
 
     valueObject[key] = value;
-
     return JSON.stringify(valueObject);
 };
 
-populateOptions = (dataArray, key, valueObject) => {
+// builds and returns the options array for message menus
+valOptions = (dataArray, key, valueObject) => {
     let options = [];
 
     dataArray.forEach( e => {
-
         let textValuePair = {};
         textValuePair.text = e;
         textValuePair.value = valStringer(valueObject, key, e);
@@ -26,81 +26,157 @@ populateOptions = (dataArray, key, valueObject) => {
 };
 
 
+// builds and returns a menu attachment object injected with valOptions
+valMenu = (headerText, callbackID, menuName, valueObject, menuItemsArray, customAttachment) => {
 
-/**
+    let attachment = customAttachment ? errorScan('menu', customAttachment) ? errorScan('menu', customAttachment) :
+        customAttachment :
+        menuAttachment(headerText, callbackID, menuName);
 
-                        Description / how to use the valAttacher function:
-
- valueObject:
-   initial message: pass an empty object {}
-   subsequent responses: pass the value object from the Slack interactive message payload
-       accessed via: "payload.actions[0].selected_options[0].value"
-
- attachmentFields:
-   this is an object containing all attachment fields besides the options themselves
-   the following is a list of the minimum required fields:
-   {
-        text: instructional text describing the purpose of the dropdown menu,
-        callback_id: the id of the particular message, this is used server side to distinguish the received message,
-        actions: [{
-
-            name: pass the same name as the field in the database schema that the value will be associated with,
-            type: 'select' DO NOT CHANGE THIS,
-            data_source: 'static' DO NOT CHANGE THIS,
-        }],
-
-        any additional slack-accepted fields you would like should be added [comma-separated] below
+    if(typeof attachment === "object"){
+        let actions = attachment.actions[0];
+        actions.options = valOptions(menuItemsArray, actions.name, valueObject);
     }
-************************************************
 
-    for copy and pasting - the minimum:
+    return attachment;
+};
 
-    {
-        text: replaceMe,
-        callback_id: replaceMe,
+// builds and returns a button attachment object injected with valStringer
+valButton = (headerText, callbackID, buttonText, buttonName, buttonValue, valueObject, customAttachment) => {
+
+    let attachment = customAttachment ? errorScan('button', customAttachment) ? errorScan('button', customAttachment) :
+        customAttachment :
+        buttonAttachment(headerText, callbackID, buttonText, buttonName, buttonValue, valueObject);
+
+    if(typeof attachment === "object")
+        attachment.actions[0].value = valStringer(valueObject, buttonName, buttonValue);
+
+    return attachment;
+};
+
+// ---------------------------- TOOLS --------------------------------- //
+
+// builds the shell of a menu attachment
+menuAttachment = (headerText, callbackID, menuName) => {
+
+    return {
+        text: headerText,
+        callback_id: callbackID,
         actions: [{
-            name: replaceMe,
+            name: menuName,
             type: 'select',
             data_source: 'static'
         }]
     }
 
-************************************************
+};
 
- optionsTextArray:
-   this is an array that will provide text labels for each value
-   it can be hardcoded into the Default variable or passed into the function
+// builds the shell of a button attachment
+buttonAttachment = (headerText, callbackID, buttonText, buttonName, buttonValue, valueObject) => {
 
+    return {
+        text: headerText,
+        callback_id: callbackID,
+        actions: [{
+            text: buttonText,
+            name: buttonName,
+            type: 'button',
+            value: valStringer(valueObject, buttonName, buttonValue)
+        }]
+    }
+};
 
- **/
+// scans a custom attachment object for errors
+errorScan = (type, customAttachment) => {
 
-valAttacher = (valueObject, attachmentFields, optionsTextArray = null) => {
+    const expectedKeys = ['text', 'callback_id', 'actions'];
+    const expectedSubKeys = type === 'menu' ? ['name', 'type', 'data_source'] : ['text', 'name', 'type'];
 
-// tests the attachmentFields object to ensure that all minimum field requirements have been met;
-    // could split this into a switch or chained if to give better feedback on which property is missing
-    if(!(attachmentFields.hasOwnProperty('text')
-        && attachmentFields.hasOwnProperty('callback_id')
-        && attachmentFields.hasOwnProperty('actions'))){
-        return 'minimum required fields missing';
-    }else{
-        const actions = attachmentFields.actions[0];
-        if(!(actions.hasOwnProperty('name') && actions.type === 'select' && actions.data_source === 'static')){
-            return 'minimum required fields for the action object missing'
+    const keysError = verifyKeys(customAttachment, expectedKeys, 'outer attachment properties');
+    if(keysError){
+        return keysError;
+    }
+
+    const actions = customAttachment.actions[0];
+    const subKeysError = verifyKeys(actions, expectedSubKeys, 'actions array object');
+    if(subKeysError){
+        return subKeysError;
+    }
+
+    else {
+        switch(type){
+            case 'menu':
+                switch(true) {
+                    case actions.type !== 'select':
+                        return `invalid custom attachment: action type must be "select" for interactive menus`;
+                    case actions.data_source !== 'static':
+                        return `invalid custom attachment: data_source must be "static" for interactive menus`;
+                }
+                break;
+            case 'button':
+                switch(true){
+                    case actions.type !== 'button':
+                        return `invalid custom attachment: action type must be "button" for interactive buttons`;
+                }
+                break;
         }
     }
 
-// handle attachment fields
-    let attachment = {};
-    let keys = Object.keys(attachmentFields);
-    keys.forEach( key => attachment[key] = attachmentFields[key] );
-
-// handle "select" options
-    let Default = [ / hardcode a default array of text strings here / ];
-    let a;
-    optionsTextArray ? a = optionsTextArray : a = Default;
-
-    attachment.options = populateOptions(a, attachmentFields.name, valueObject);
-
-    return attachment;
+    return false;
 };
 
+
+// verifies the keys of a custom attachment object
+verifyKeys = (object, expectedKeys, location) => {
+    let error;
+
+    expectedKeys.forEach( e => {
+        if(!object.hasOwnProperty(e)){
+            error = `invalid custom attachment: missing the property "${e}" in the ${location}`;
+        }
+    });
+
+    return error ? error : false;
+};
+
+module.exports = {
+    stringer : valStringer,
+    options : valOptions,
+    menu : valMenu,
+    button : valButton
+};
+
+
+/*
+ * Testing
+ *
+ *
+
+ const testMessageAttachment = {
+ text: 'test text',
+ callback_id: 'test callback id',
+ actions: [{
+ name: 'test name',
+ type: 'select',
+ data_source: 'static'
+ }]
+ };
+
+ const testMenuItems = ['item 1', 'item 2'];
+
+
+ const testButtonAttachment = {
+ text: 'test header text',
+ callback_id: 'test callback id',
+ actions: [{
+ text: 'test button text',
+ name: 'best button name',
+ type: 'button',
+ value: 'test value'
+ }]
+ };
+
+ // console.log(valMenu(null, null, null, {}, testMenuItems, testMessageAttachment));
+ // console.log(valButton(null, null, null, null, null, {}, testButtonAttachment));
+
+ * */

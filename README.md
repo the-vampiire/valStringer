@@ -1,5 +1,6 @@
-Created by Vampiire on 7/24/17.
-Concept Inspiration: @agathalynn from the Chingu Voyage Cohort 
+**Created by Vampiire**
+
+**Concept Inspiration: @agathalynn from the Chingu Voyage Cohort**
  
   Val Stringer
  
@@ -12,30 +13,32 @@ Concept Inspiration: @agathalynn from the Chingu Voyage Cohort
   On submit all of the values of the dropdown menus are passed to the server in a single object. This object can be
   easily passed directly into an insert or update method with a single database call.
  
-  Val Stringer allows for interactive messages in Slack to act more similarly to an HTML form in terms of gathering data
-  and updating a database. It works by exploiting the value property of the IM menu items. An object which can
-  continuously store the values obtained during an IM interaction can be passed into the value field by stringifying it
+  Val Stringer allows for interactive messages in Slack to provide HTML form benefits with respect to gathering data
+  and updating a database. It works by exploiting the value property of the IM menu or button attachment. Currently a
+  simple string is inserted as a value. Using valStringer an object is stringified and inserted as the value. This
+  makes Slack store the data throughout the user's interactions until it is ready to be processed in bulk.
+
+  During the first interaction the empty object is injected with the value of the first item via the valStringer function.
+  On each subsequent menu or button interaction the value object is updated to store all previous and current values.
+  When the final "submit" button is interacted by the user an object which stores the bulk data of all values is returned.
+  This bulk data object can be easily passed directly into an upsert / update database call.
  
-  A single object filled with multiple values obtained through multiple user interactions with
-  an interactive message is passed back just like an HTML form. By labeling each value obtained the same as that of the
-  database schema fields this single object can be passed directly into a mongoose upsert / update database call.
- 
-  Code:
- 
-  
- 
+  Code Breakdown:
+
        function valStringer
  
            purpose:
                First message: accept a blank object and add the initial key and Slack user inputted value
-               Subsequent: accept the now populated value object, extracted from the payload, and add all subsequent
-                           keys and values per call
- 
+               Subsequent: accept the now populated value object, extracted from the payload, and add all subsequent keys and values per call
+
            parameters:
                valueObject -> the object which stores the initial and all subsequent values are stored
                               when the interactive messages chain has completed this object can be passed
                               directly into a mongodb / mongoose update method to update all the fields
                               received from the Slack interaction
+
+                              accessed via: "payload.actions[0].selected_options[0].value"
+                                  copy / paste : let value = payload.actions[0].selected_options[0].value
  
                key -> the name of the key that will hold the Slack user inputted value
                       this should be the same as the mongodb schema field that the value will be associated with
@@ -46,7 +49,7 @@ Concept Inspiration: @agathalynn from the Chingu Voyage Cohort
  
   *********************************************************************************************************************
  
-       function populateOptions:
+       function valOptions:
  
            purpose:
                accepts an array of IM menu text values to populate the menu automatically while still preserving
@@ -63,7 +66,61 @@ Concept Inspiration: @agathalynn from the Chingu Voyage Cohort
  
   *********************************************************************************************************************
  
-       function valAttacher: see detailed description below
- 
+       function valAttacher:
+
+            purpose:
+                verifies, builds, and returns a Slack interactive message attachment with built in valStringer and valOptions functionality
+
+            parameters:
+
+                valueObject ->
+
+                    initial message: pass an empty object {}
+                    subsequent responses: pass the value object from the Slack interactive message payload
+
+
+                attachmentFields ->
+
+                    this is an object containing all attachment fields besides the options themselves
+                        options will be automatically generated from the optionsTextArray parameter
+                        using the valOptions function
+
+                    the following is a detailed look at the minimum required fields:
+                        {
+                             text: instructional text describing the purpose of the dropdown menu,
+                             callback_id: the id of the particular message, this is used server side to distinguish the received message,
+                             actions: [{
+
+                                 name: pass the same name as the field in the database schema that the value will be associated with,
+                                 type: 'select' DO NOT CHANGE THIS,
+                                 data_source: 'static' DO NOT CHANGE THIS,
+                             }],
+
+                             any additional slack-accepted fields you would like should be added [comma-separated] below
+                         }
+
+                optionsTextArray ->
+
+                     this is an array that will provide text and values labels for each menu item
+                     it can be hardcoded into the Default variable or passed into the function from an external source
+
+        ************************************************
+
+        for copy and pasting - the minimum required attachment fields object:
+
+        {
+            text: replaceMe,
+            callback_id: replaceMe,
+            actions: [{
+                name: replaceMe,
+                type: 'select',
+                data_source: 'static'
+            }]
+        }
+
+        ************************************************
+
   *********************************************************************************************************************
-      
+
+Example Usage:
+
