@@ -48,7 +48,8 @@ valButton = (headerText, callbackID, buttonText, buttonName, buttonValue, valueO
         customAttachment :
         buttonAttachment(headerText, callbackID, buttonText, buttonName, buttonValue, valueObject);
 
-    if(typeof attachment === "object") customAttachment.actions[0].value = valStringer(valueObject, buttonName, buttonValue);
+    if(typeof attachment === "object")
+        attachment.actions[0].value = valStringer(valueObject, buttonName, buttonValue);
 
     return attachment;
 };
