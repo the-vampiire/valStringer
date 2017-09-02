@@ -1,5 +1,4 @@
 **Created by Vampiire**
-
 I am looking to improve this package in anticipation of Slack's interactive messages v3 [text input]. Once completing the features then the documentation can be written.
 
 The current README is incomplete and deprecated. It is only there to be used as a source for future documentation.
@@ -22,7 +21,6 @@ If you are interested in helping email vampiirecodes gmail com or visit the [git
 <hr>
 
  # OLD README BELOW:
-
 **Concept Inspiration: @agathalynn from the Chingu Voyage Cohort**
  
   Val Stringer
