@@ -1,5 +1,26 @@
 **Created by Vampiire**
+I am looking to improve this package in anticipation of Slack's interactive messages v3 [text input]. Once completing the features then the documentation can be written.
 
+The current README is incomplete and deprecated. It is only there to be used as a source for future documentation.
+
+If you are interested in helping email vampiirecodes gmail com or visit the [github page](https://github.com/the-vampiire/valStringer)
+
+ # Notes from the original valStringer function:
+
+ this function allows the value of each interactive message menu item to hold an object storing current and previous selected values
+
+ the function accepts the value object, a key parameter [the item the user sees], and a value associated with that key
+ 
+ when the final value is received you can process the value object and store all of its data in the database in bulk rather
+ than doing it piecewise as each value is received at your interactive message request route
+
+ this removes n-1 database queries per user interaction 
+ if you set the keys of the valueObject to be the same as those of your database schema you can greatly simplify
+ the process of gathering and storing bulk data
+
+<hr>
+
+ # OLD README BELOW:
 **Concept Inspiration: @agathalynn from the Chingu Voyage Cohort**
  
   Val Stringer

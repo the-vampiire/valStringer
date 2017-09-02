@@ -1,0 +1,23 @@
+{
+  "name": "valstringer",
+  "version": "1.0.0",
+  "description": "ValStringer is a collection of tools that trick Slack interactive messages into behaving like an HTML form. It comes with tools to autopopulate selections, create buttons, create menu items, and create submit/reset/cancel buttons for \"form submission\". Documenation is sparse because the project is incomplete. If you are interested in helping visit the github page at https://github.com/the-vampiire/valstringer",
+  "main": "valueStringer.js",
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/the-vampiire/valStringer"
+  },
+  "keywords": [
+    "valStringer",
+    "Slack",
+    "slack-form",
+    "slack-html",
+    "slack-data-collection",
+    "interactive-messages",
+    "slack-app",
+    "slack-bot",
+    "slack-interactive-messages"
+  ],
+  "author": "Vampiire",
+  "license": "GPL-3.0"
+}
