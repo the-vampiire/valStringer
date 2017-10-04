@@ -26,25 +26,31 @@ github page: https://github.com/the-vampiire/valStringer
 
 // builds and returns the valueObject
 function valStringer(valueObject, key, value) {
-    
-        if(typeof valueObject === 'string') valueObject = JSON.parse(valueObject);
-    
-        valueObject[key] = value;
-        return JSON.stringify(valueObject);
-    };
+    if(typeof valueObject === 'string') valueObject = JSON.parse(valueObject);
+
+    valueObject[key] = value;
+    return JSON.stringify(valueObject);
+};
     
 // integrates valStringer and returns the options array for message menus
 function valOptions(dataArray, key, valueObject) {
-    let options = [];
-
+    const options = [];
     dataArray.forEach( e => {
-        let textValuePair = {};
-        textValuePair.text = e;
-        textValuePair.value = valStringer(valueObject, key, e);
-
-        options.push(textValuePair);
+      const textValuePair = {};
+      let value;
+      let text;
+      
+      if (typeof e === 'string') value = text = e;
+      else {
+        value = Object.keys(e)[0];
+        text = e[value];
+      }
+      
+      textValuePair.text = text;
+      textValuePair.value = valStringer(valueObject, key, value);
+      options.push(textValuePair);
     });
-
+  
     return options;
 };
     
@@ -60,7 +66,7 @@ function valCustom(type, customAttachment, valueObject, menuItemsArray) {
         case 'button':
             return valButton(customAttachment, valueObject);
     }
-};
+}
     
 // builds and returns a menu /attachment/ with integrated valStringer support
 function valMenu(customAttachment, valueObject, menuItemsArray, headerText, callbackID, menuName) {
@@ -75,7 +81,7 @@ function valMenu(customAttachment, valueObject, menuItemsArray, headerText, call
     }
 
     return attachment;
-};
+}
 
 // builds and returns a button /attachment/ with integrated valStringer support
 function valButton(customAttachment, valueObject, headerText, callbackID, buttonText, buttonName, buttonValue) {
@@ -88,29 +94,29 @@ function valButton(customAttachment, valueObject, headerText, callbackID, button
         attachment.actions[0].value = valStringer(valueObject, buttonName, buttonValue);
 
     return attachment;
-};
+}
     
 // builds and returns a submit / reset / cancel multiple-button message 
 // with integrated valStringer support
 function valSubmit(valueObject, type, reset, cancel, customText) {
 
-    let response = {
-        text: `${customText ? customText : 'Submit or Reset'}`,
+let response = {
+    text: `${customText ? customText : 'Submit or Reset'}`,
 
-        attachments: [
-            {
-                text: '',
-                callback_id: `${type}Submit`,
-                actions: [{
-                    text: 'Confirm',
-                    name: 'submit',
-                    type: 'button',
-                    style: 'primary',
-                    value: valStringer(valueObject, 'submit', true)
-                }]
-            }
-        ]
-    };
+    attachments: [
+        {
+            text: '',
+            callback_id: `${type}Submit`,
+            actions: [{
+                text: 'Confirm',
+                name: 'submit',
+                type: 'button',
+                style: 'primary',
+                value: valStringer(valueObject, 'submit', true)
+            }]
+        }
+    ]
+};
 
     if(reset) response.attachments[0].actions.push({
             text: 'Start Over',
